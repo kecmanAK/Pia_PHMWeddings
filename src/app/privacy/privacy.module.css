@@ -1,0 +1,34 @@
+.page {
+  max-width: 46rem;
+  margin-inline: auto;
+  padding: clamp(6rem, 12vw, 10rem) 1rem clamp(3rem, 7vw, 6rem);
+  font-size: 0.75rem;
+  line-height: 1.7;
+}
+
+.page h1 {
+  margin: 0 0 1.5rem;
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.page h2 {
+  margin: 2rem 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.page p {
+  margin: 0;
+  white-space: pre-line;
+}
+
+.page p + p {
+  margin-top: 1rem;
+}
+
+.page a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}

@@ -1,0 +1,79 @@
+.page {
+  padding: clamp(6rem, 7.706vw, 11.5625rem) 1.5rem 5rem;
+  background: var(--paper);
+}
+
+.intro {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 39.1875rem;
+  margin: 0 auto clamp(3rem, 5vw, 5.375rem);
+  text-align: center;
+}
+
+.back {
+  display: block;
+  width: fit-content;
+  margin: 0 auto;
+  font-size: 0.75rem;
+  font-weight: 300;
+  text-decoration: underline;
+  text-decoration-color: var(--neutral-400);
+  text-decoration-thickness: 0.01em;
+  text-underline-offset: 0.25em;
+}
+
+.intro h1 {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: clamp(1.75rem, 2.3148vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.intro blockquote {
+  margin: 0;
+  color: var(--neutral-400);
+  font-size: 0.75rem;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.intro p {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+.photos {
+  --photo-gap: clamp(0.5rem, 2.5463vw, 2.75rem);
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--photo-gap);
+  width: min(82.63889vw, 89.25rem);
+  margin: 0 auto 6rem;
+}
+
+.column {
+  display: grid;
+  gap: var(--photo-gap);
+}
+
+.column figure {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding-block-end: 0;
+    padding-inline: 1rem;
+  }
+
+  .photos {
+    width: 100%;
+  }
+}
