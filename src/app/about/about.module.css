@@ -1,0 +1,88 @@
+.page {
+  display: grid;
+  grid-template:
+    "intro ."        max-content
+    "copy  portrait" max-content / minmax(0, 56fr) minmax(0, 44fr);
+  align-items: start;
+  gap: clamp(2rem, 3.7037vw, 4rem) clamp(1rem, 1.15741vw, 1.25rem);
+  min-height: 100svh;
+  padding-block: clamp(6rem, 7.92824vw, 8.5625rem) clamp(3rem, 5vw, 6rem);
+  padding-inline: clamp(1rem, 2.31481vw, 2.5rem) clamp(1rem, 1.44676vw, 1.5625rem);
+  background: var(--paper);
+}
+
+.intro {
+  grid-area: intro;
+}
+
+.intro h1 {
+  margin: 0;
+  font-size: clamp(2.5rem, 3.7037vw, 4rem);
+  font-weight: 700;
+  line-height: 1.09375;
+}
+
+.intro p {
+  margin: 0;
+  font-size: clamp(1.125rem, 1.38889vw, 1.5rem);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 1.45833;
+}
+
+.portraitFrame {
+  grid-area: portrait;
+}
+
+.portrait {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 829 / 1015;
+  object-fit: cover;
+}
+
+.copy {
+  grid-area: copy;
+  display: grid;
+  gap: 1lh;
+  font-size: 0.75rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 27px;
+}
+
+.copy p {
+  margin: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+@media (width > 768px) {
+  .portraitFrame {
+    position: relative;
+    align-self: stretch;
+  }
+
+  .portrait {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    grid-template: "intro" "portrait" "copy" / minmax(0, 1fr);
+    align-content: start;
+    row-gap: 1.5rem;
+    padding-inline: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    min-height: 0;
+    padding-block-end: 0;
+  }
+}

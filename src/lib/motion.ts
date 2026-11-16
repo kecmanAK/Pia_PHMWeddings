@@ -1,0 +1,9 @@
+export const animationEase = [0.22, 1, 0.36, 1] as const;
+export const pageDuration = 0.3;
+export const pageEase = [0.25, 0.1, 0.25, 1] as const;
+export const pageOffset = 32;
+export const reviewDuration = 0.65;
+export const mobileReviewDuration = reviewDuration * 1.5;
+export const interactionDuration = 0.3;
+export const anchorScrollDuration = 1.2;
+export const anchorScrollEase = [0.42, 0, 0.58, 1] as const;

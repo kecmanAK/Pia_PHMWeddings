@@ -1,0 +1,15 @@
+FROM node:24-bookworm-slim
+
+WORKDIR /studio
+RUN chown node:node /studio
+USER node
+
+COPY --chown=node:node package.json package-lock.json ./
+RUN npm ci --include=dev --no-audit --no-fund
+
+COPY --chown=node:node sanity.cli.js sanity.config.js ./
+COPY --chown=node:node src/content/about.ts src/content/contact.ts src/content/privacy.ts ./src/content/
+COPY --chown=node:node src/studio/about-page-preview.tsx ./src/studio/
+
+EXPOSE 3333
+CMD ["./node_modules/.bin/sanity", "dev", "--host", "0.0.0.0", "--port", "3333"]

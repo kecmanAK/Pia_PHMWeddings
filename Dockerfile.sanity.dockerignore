@@ -1,0 +1,9 @@
+**
+!package.json
+!package-lock.json
+!sanity.cli.js
+!sanity.config.js
+!src/content/about.ts
+!src/content/contact.ts
+!src/content/privacy.ts
+!src/studio/about-page-preview.tsx
