@@ -1,25 +1,19 @@
 "use client";
 
-import { getImageProps } from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { animate, cancelFrame, frame, type AnimationPlaybackControls } from "motion";
 import { motion, useReducedMotion } from "motion/react";
 import * as THREE from "three";
 
-type GalleryAsset = {
-  alt: string;
-  aspect: number;
-  src: string;
-};
+import type { SpherePhoto } from "@/lib/homepage";
 
 const SPHERE_RADIUS = 5;
 const IMAGE_HEIGHT = 1.9;
-const DESKTOP_ITEM_COUNT = 18;
 const BASE_CAMERA_FOV = 44;
 const DESKTOP_FRAME_SCALE = 0.52;
 const MOBILE_FRAME_SCALE = 0.76;
+const DESKTOP_PHOTO_SCALE = 1.05;
 const MOBILE_PHOTO_SCALE = 1.25;
-const MOBILE_TEXTURE_DISPLAY_WIDTH = 256;
 const MAX_PHOTO_BASE_SCALE = 0.985;
 const MAX_RENDER_PIXELS = 8_000_000;
 const FOCUS_HOLD_DURATION = 2000;
@@ -33,79 +27,6 @@ type SphereSession = {
 // Activity hides cached pages and reconnects their effects on return. Keep GPU
 // resources with the retained DOM; dispose them only when that DOM is removed.
 const sphereSessions = new WeakMap<HTMLDivElement, SphereSession>();
-
-const galleryAssets: GalleryAsset[] = [
-  {
-    alt: "Bride holding a pink and white bouquet in a bright interior",
-    aspect: 1338 / 1438,
-    src: "/images/couple_1__05.png",
-  },
-  {
-    alt: "Lace veil and white flowers resting on grass",
-    aspect: 1338 / 1438,
-    src: "/images/couple_1__06.png",
-  },
-  {
-    alt: "Couple embracing at an outdoor floral ceremony",
-    aspect: 706 / 920,
-    src: "/images/couple_2_3__02.png",
-  },
-  {
-    alt: "Black and white portrait of a bride embracing the groom",
-    aspect: 706 / 1076,
-    src: "/images/couple_2_3__03.png",
-  },
-  {
-    alt: "Pink and white bridal bouquet held against a blue sky",
-    aspect: 1338 / 1438,
-    src: "/images/couple_2_3__07.png",
-  },
-  {
-    alt: "Groom kissing the bride as she holds white calla lilies",
-    aspect: 538 / 748,
-    src: "/images/couple_2_3__13.png",
-  },
-  {
-    alt: "Bride posing beside a wooden table in a quiet interior",
-    aspect: 306 / 410,
-    src: "/images/couple_2_3__14.png",
-  },
-  {
-    alt: "Smiling newlyweds leaving their outdoor ceremony",
-    aspect: 1338 / 894,
-    src: "/images/couple_3_2__01.png",
-  },
-  {
-    alt: "Groom kissing the bride on a curved modern staircase",
-    aspect: 1338 / 1030,
-    src: "/images/couple_3_2__04.png",
-  },
-  {
-    alt: "Black and white portrait of newlyweds sharing a dip kiss",
-    aspect: 1338 / 1022,
-    src: "/images/couple_3_2__08.png",
-  },
-  {
-    alt: "Artistic motion-blurred floral arrangement in the grass",
-    aspect: 892 / 1338,
-    src: "/images/couple_3_2__09.png",
-  },
-  {
-    alt: "Black and white portrait of a couple beside a champagne tower",
-    aspect: 660 / 488,
-    src: "/images/couple_3_2__11.png",
-  },
-  {
-    alt: "Outdoor ceremony flowers arranged in a green grove",
-    aspect: 1338 / 1028,
-    src: "/images/couple_3_2__12.png",
-  },
-];
-
-const desktopSphereItems = Array.from(
-  { length: DESKTOP_ITEM_COUNT },
-  (_, index) => galleryAssets[index % galleryAssets.length],
-);
 
 function fibonacciSphere(count: number, radius: number) {
   const goldenAngle = Math.PI * (3 - Math.sqrt(5));
@@ -158,7 +79,7 @@ function getSphereContentHeight(
   return Math.ceil(baseHeight / 2 + projectedPhotoBottom + safetySpace);
 }
 
-export function RotatingGallery() {
+export function RotatingGallery({ photos }: { photos: SpherePhoto[] }) {
   const reducedMotion = useReducedMotion() ?? false;
   const mountRef = useRef<HTMLDivElement>(null);
   const pausedRef = useRef(false);
@@ -215,8 +136,7 @@ export function RotatingGallery() {
     const meshes: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>[] = [];
     const textures = new Set<THREE.Texture>();
     const isMobile = window.matchMedia("(pointer: coarse), (max-width: 640px)").matches;
-    const sphereItems = isMobile ? galleryAssets : desktopSphereItems;
-    const positions = fibonacciSphere(sphereItems.length, SPHERE_RADIUS);
+    const positions = fibonacciSphere(photos.length, SPHERE_RADIUS);
     const focusDirections = positions.map((position) => position.clone().normalize());
     const resizeObserver = new ResizeObserver(resizeScene);
     const groupQuaternion = new THREE.Quaternion();
@@ -258,7 +178,7 @@ export function RotatingGallery() {
         mobileInfluence,
       );
       responsivePhotoScale = THREE.MathUtils.lerp(
-        1,
+        isMobile ? 1 : DESKTOP_PHOTO_SCALE,
         MOBILE_PHOTO_SCALE,
         mobileInfluence,
       );
@@ -380,7 +300,7 @@ export function RotatingGallery() {
     }
 
     function startNextFocus() {
-      let nextIndex = Math.floor(Math.random() * (sphereItems.length - 1));
+      let nextIndex = Math.floor(Math.random() * (photos.length - 1));
       if (nextIndex >= focusedIndex) nextIndex += 1;
 
       focusedIndex = nextIndex;
@@ -412,27 +332,18 @@ export function RotatingGallery() {
     async function buildSphere() {
       try {
         const loader = new THREE.TextureLoader();
-        const assetsBySource = new Map(sphereItems.map((asset) => [asset.src, asset]));
-        const loadedTextures = new Map<string, THREE.Texture>();
+        const loadedTextures = new Map<SpherePhoto, THREE.Texture>();
 
         await Promise.all(
-          Array.from(assetsBySource.values(), async ({ alt, aspect, src }) => {
-            const textureSource = isMobile
-              ? getImageProps({
-                alt,
-                src,
-                width: MOBILE_TEXTURE_DISPLAY_WIDTH,
-                height: Math.round(MOBILE_TEXTURE_DISPLAY_WIDTH / aspect),
-              }).props.src
-              : src;
-            const texture = await loader.loadAsync(textureSource);
+          photos.map(async (photo) => {
+            const texture = await loader.loadAsync(isMobile ? photo.mobileSrc : photo.desktopSrc);
             if (disposed) {
               texture.dispose();
               return;
             }
             texture.colorSpace = THREE.SRGBColorSpace;
             texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-            loadedTextures.set(src, texture);
+            loadedTextures.set(photo, texture);
             textures.add(texture);
           }),
         );
@@ -442,8 +353,8 @@ export function RotatingGallery() {
           return;
         }
 
-        sphereItems.forEach((asset, index) => {
-          const texture = loadedTextures.get(asset.src);
+        photos.forEach((asset, index) => {
+          const texture = loadedTextures.get(asset);
           if (!texture) return;
 
           const aspect = THREE.MathUtils.clamp(asset.aspect, 0.7, 1.65);
@@ -463,7 +374,7 @@ export function RotatingGallery() {
         });
 
         if (disposed) return;
-        focusedIndex = Math.floor(Math.random() * sphereItems.length);
+        focusedIndex = Math.floor(Math.random() * photos.length);
         sphereGroup.quaternion.setFromUnitVectors(
           focusDirections[focusedIndex],
           cameraDirection,
@@ -608,7 +519,7 @@ export function RotatingGallery() {
     session.resume(reducedMotion);
 
     return session.suspend;
-  }, [reducedMotion]);
+  }, [photos, reducedMotion]);
 
   return (
     <section
@@ -660,7 +571,7 @@ export function RotatingGallery() {
       */}
 
       <ul className="sr-only">
-        {galleryAssets.map((asset, index) => (
+        {photos.map((asset, index) => (
           <li key={`${asset.alt}-${index}`}>{asset.alt}</li>
         ))}
       </ul>

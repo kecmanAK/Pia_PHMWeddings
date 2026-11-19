@@ -28,20 +28,15 @@ export function ContactLinks({ inBar = false, email, instagram = defaultInstagra
 }) {
   const instagramUrl = `https://www.instagram.com/${instagram}/`;
   const instagramText = `@${instagram}`;
+
+  if (inBar) {
+    return <SiteContactBarLink href={instagramUrl}>{instagramText}</SiteContactBarLink>;
+  }
+
   const emailLink = email && {
     href: `mailto:${encodeURIComponent(email).replace("%40", "@")}`,
     text: email,
   };
-
-  if (inBar) {
-    return (
-      <>
-        <SiteContactBarLink href={instagramUrl}>{instagramText}</SiteContactBarLink>
-        <p>Ljubljana&nbsp;&nbsp;•&nbsp;&nbsp;Europe</p>
-        {emailLink && <SiteContactBarLink href={emailLink.href}>{emailLink.text}</SiteContactBarLink>}
-      </>
-    );
-  }
 
   return (
     <>

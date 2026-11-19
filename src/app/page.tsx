@@ -1,10 +1,11 @@
-import type { CSSProperties } from "react";
+import { Suspense, cache, type CSSProperties } from "react";
 
 import { HomeScrollRestoration } from "@/components/home-scroll-restoration";
 import { PageTransition } from "@/components/page-transition";
 import { PortfolioCard } from "@/components/portfolio-card";
 import { RotatingGallery } from "@/components/rotating-gallery";
-import { getWeddingForPhoto, portfolioImages, type PhotoId } from "@/lib/portfolio-images";
+import { defaultHomepageCopy, defaultMobileSphereLines } from "@/content/homepage";
+import { getHomepageContent } from "@/lib/homepage";
 
 type PortfolioLayout = {
   desktop: {
@@ -35,10 +36,6 @@ type PortfolioCardStyle = CSSProperties & {
   "--mobile-row": number;
   "--mobile-width": string;
 };
-
-const portfolioTiles: PhotoId[] = [
-  "P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09", "P10", "P11", "P12", "P13",
-];
 
 const portfolioLayouts: PortfolioLayout[] = [
   {
@@ -95,6 +92,77 @@ const portfolioLayouts: PortfolioLayout[] = [
   },
 ];
 
+const portfolioLayoutRows = Math.max(...portfolioLayouts.map(({ desktop, mobile }) => Math.max(desktop.row, mobile.row)));
+
+const readHomepageContent = cache(getHomepageContent);
+
+function SphereHeadline({ text }: { text: string }) {
+  const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const custom = text !== defaultHomepageCopy.sphereHeadline;
+  const mobileLines = custom ? lines : defaultMobileSphereLines;
+
+  return (
+    <div className="hero-copy">
+      <h1
+        id="hero-title"
+        aria-label={lines.join(" ")}
+        data-custom-headline={custom || undefined}
+        style={custom ? { "--headline-height-ratio": lines.length * 1.3 } as CSSProperties : undefined}
+      >
+        {lines.map((line, index) => <span key={index} className="hero-title-desktop">{line}</span>)}
+        {mobileLines.map((line, index) => <span key={index} className="hero-title-mobile">{line}</span>)}
+      </h1>
+    </div>
+  );
+}
+
+async function HomepageHero() {
+  const { sphere, sphereHeadline } = await readHomepageContent();
+  return (
+    <>
+      <SphereHeadline text={sphereHeadline} />
+      {sphere.length > 0 && <RotatingGallery key={JSON.stringify(sphere)} photos={sphere} />}
+    </>
+  );
+}
+
+async function HomepageStickyText() {
+  const { stickyText } = await readHomepageContent();
+  return <h2 id="work-title">{stickyText}</h2>;
+}
+
+async function HomepagePortfolio() {
+  const { grid } = await readHomepageContent();
+
+  return grid.map(({ id, image, wedding }, index) => {
+    const layout = portfolioLayouts[index % portfolioLayouts.length];
+    const rowOffset = Math.floor(index / portfolioLayouts.length) * portfolioLayoutRows;
+
+    const cardStyle: PortfolioCardStyle = {
+      "--desktop-align": layout.desktop.align,
+      "--desktop-column": layout.desktop.column,
+      "--desktop-offset": layout.desktop.offset,
+      "--desktop-row": layout.desktop.row + rowOffset,
+      "--desktop-width": layout.desktop.width,
+      "--mobile-align": layout.mobile.align,
+      "--mobile-column": layout.mobile.column,
+      "--mobile-offset": layout.mobile.offset,
+      "--mobile-row": layout.mobile.row + rowOffset,
+      "--mobile-width": layout.mobile.width,
+    };
+
+    return (
+      <PortfolioCard
+        key={id}
+        image={image}
+        photoId={id}
+        wedding={wedding}
+        style={cardStyle}
+      />
+    );
+  });
+}
+
 export default function Home() {
   return (
     <PageTransition pageKey="home">
@@ -102,60 +170,22 @@ export default function Home() {
         <HomeScrollRestoration />
 
         <section id="top" className="hero" aria-labelledby="hero-title">
-          <div className="hero-copy">
-            <h1 id="hero-title">
-              <span className="hero-title-desktop">Soft, elegant</span>
-              <span className="hero-title-desktop">and full of</span>
-              <span className="hero-title-desktop">light.</span>
-              <span className="hero-title-mobile">Soft</span>
-              <span className="hero-title-mobile">Elegant</span>
-              <span className="hero-title-mobile">and full</span>
-              <span className="hero-title-mobile">of light.</span>
-            </h1>
-          </div>
-
-          <RotatingGallery />
+          <Suspense fallback={<SphereHeadline text={defaultHomepageCopy.sphereHeadline} />}>
+            <HomepageHero />
+          </Suspense>
         </section>
 
         <section id="work" className="work-section" aria-labelledby="work-title">
           <div className="work-copy">
-            <h2 id="work-title">
-              Photographs that blend a modern aesthetic with authentic emotion,
-              reminding you both of how it felt and how you felt.
-            </h2>
+            <Suspense fallback={<h2 id="work-title">{defaultHomepageCopy.stickyText}</h2>}>
+              <HomepageStickyText />
+            </Suspense>
           </div>
 
           <div className="portfolio-grid">
-            {portfolioTiles.map((photoId, index) => {
-              const image = portfolioImages[photoId];
-              const wedding = getWeddingForPhoto(photoId);
-              const layout = portfolioLayouts[index];
-
-              if (!layout) return null;
-
-              const cardStyle: PortfolioCardStyle = {
-                "--desktop-align": layout.desktop.align,
-                "--desktop-column": layout.desktop.column,
-                "--desktop-offset": layout.desktop.offset,
-                "--desktop-row": layout.desktop.row,
-                "--desktop-width": layout.desktop.width,
-                "--mobile-align": layout.mobile.align,
-                "--mobile-column": layout.mobile.column,
-                "--mobile-offset": layout.mobile.offset,
-                "--mobile-row": layout.mobile.row,
-                "--mobile-width": layout.mobile.width,
-              };
-
-              return (
-                <PortfolioCard
-                  key={photoId}
-                  image={image}
-                  photoId={photoId}
-                  wedding={wedding ?? undefined}
-                  style={cardStyle}
-                />
-              );
-            })}
+            <Suspense fallback={<span className="sr-only" role="status">Loading portfolio photographs…</span>}>
+              <HomepagePortfolio />
+            </Suspense>
           </div>
         </section>
 

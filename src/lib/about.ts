@@ -1,14 +1,7 @@
 import { cacheLife } from "next/cache";
 
-import { aboutDocumentId, defaultAboutBiography } from "@/content/about";
+import { aboutDocumentId, defaultAboutBiography, type AboutPortrait } from "@/content/about";
 import { getSanityImagePath, queryPublishedSanity } from "@/lib/sanity";
-
-const defaultPortrait = {
-  src: "/images/about-pia-portrait-collage.png",
-  alt: "Four black-and-white portraits of Pia",
-  width: 774,
-  height: 948,
-};
 
 type AboutDocument = {
   biography?: unknown;
@@ -19,14 +12,14 @@ type AboutDocument = {
   } | null;
 };
 
-function getPortrait(portrait: AboutDocument["portrait"]) {
+function getPortrait(portrait: AboutDocument["portrait"]): AboutPortrait | undefined {
   const imagePath = getSanityImagePath();
   const src = portrait?.src;
   const dimensions = portrait?.dimensions;
   if (!imagePath || !src?.startsWith(`https://cdn.sanity.io${imagePath}`) || /[?#]/.test(src) ||
       !dimensions || !Number.isSafeInteger(dimensions.width) || !Number.isSafeInteger(dimensions.height) ||
       dimensions.width < 1 || dimensions.height < 1) {
-    return defaultPortrait;
+    return undefined;
   }
 
   return {

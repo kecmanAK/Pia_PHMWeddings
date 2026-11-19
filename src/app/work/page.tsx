@@ -18,9 +18,11 @@ export default async function WorkPage() {
 
   return (
     <PageTransition pageKey="work">
-      <main id="top" className={styles.page}>
+      <main id="work-top" className={styles.page}>
         <h1 className="sr-only">Selected wedding photography</h1>
-        <WorkPortfolio weddings={weddings} />
+        {weddings.length > 0
+          ? <WorkPortfolio weddings={weddings} />
+          : <p className={styles.empty}>No wedding galleries are available.</p>}
       </main>
     </PageTransition>
   );

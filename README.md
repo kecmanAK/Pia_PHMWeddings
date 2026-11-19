@@ -63,9 +63,9 @@ src/
   components/
     rotating-gallery.tsx     Interactive WebGL sphere client component
   studio/                    Sanity Studio components
-public/
-  images/                    Bundled portfolio and fallback images
 ```
+
+Manage website photographs in Sanity Studio. The site renders the published homepage selections, wedding galleries, and About portrait.
 
 ## Environment and credential safety
 
@@ -119,7 +119,7 @@ The About page shows its built-in biography until a Sanity project is connected 
 2. Run `npm ci`, then `npx sanity dev`. Open the Studio at [localhost:3333](http://localhost:3333) and sign in with your Sanity account.
 3. Open **About page → Biography**. The existing copy is prefilled. Leave a blank line between paragraphs and select **Publish**. The website rechecks for published changes after one minute.
 
-The **Page preview** tab in the About document opens the published page from the local Next.js server. Set `SANITY_STUDIO_PREVIEW_URL` to the website origin when hosting Studio.
+In **About page**, open **Page preview** to see edits to the biography and portrait before publishing. Switch between **Desktop** and **Mobile** in the preview. Keep the local Next.js server running at `http://localhost:3000` when using the local Studio. For hosted Studio, set `SANITY_STUDIO_PREVIEW_URL` to the origin serving the website's `/about/preview` route.
 
 ## Contact form
 
@@ -144,10 +144,11 @@ Set **Instagram username** in the same document to update the links in the foote
 
 ## Launch checkpoint
 
-The local site is connected to Sanity project `7yjjpvrl` and its `production` dataset. The About biography and all three wedding galleries have been published in Sanity. Photo descriptions are optional, and each wedding needs four Work highlights. The mobile Work captions slide in the scroll direction beneath the photo layers.
+Commit `30741d3` is on `feature/homepage-prototype` on GitHub. The website and Studio production builds passed locally. The Vercel site is online. Sanity project `7yjjpvrl` has three published wedding galleries and a published privacy notice in the public `production` dataset.
 
-1. Publish Pia’s contact email in Sanity, configure Resend, and verify that a test enquiry reaches her inbox. Confirm the controller’s legal name and contact details, enquiry retention, and the production providers before finalizing the privacy notice.
-2. Before the preview, confirm Work lists each wedding once. Gaia & Jan and Edcelyn & Rok use the existing `gaia-jan` and `edcelyn-rok` gallery slugs.
-3. Save a Git checkpoint and set up a Vercel preview for desktop and mobile review. After approval, connect the production domain and hand over Sanity Studio access to the client.
+1. Verify the two Sanity environment variables are set for the active Vercel environment, redeploy, and check that Tara & Matej appears on Work and that the gallery opens. The Vercel-to-Sanity connection is still unverified.
+2. Review the requested website edits and identify which additional fields Pia needs in Sanity Studio. Make the website and schema changes on the development branch, then commit the reviewed changes.
+3. Deploy Sanity Studio for Pia using the existing project and the Vercel website URL for the About preview. Check editor access for both accounts. Pia’s local sign-in worked, and the other member’s sign-in still needs checking.
+4. Review and publish the content edits in Sanity. Publish Pia’s contact email, configure Resend, and verify delivery with a test enquiry. Confirm the controller’s legal name and contact details, enquiry retention, and the production providers before finalizing the privacy notice.
 
 To resume local editing, start `phm-sanity-studio` in Docker Desktop and open [Sanity Studio](http://localhost:3333/). Start the Next.js preview separately.

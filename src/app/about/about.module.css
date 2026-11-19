@@ -61,6 +61,7 @@
   .portraitFrame {
     position: relative;
     align-self: stretch;
+    min-block-size: clamp(20rem, 28vw, 30rem);
   }
 
   .portrait {
@@ -77,6 +78,10 @@
     align-content: start;
     row-gap: 1.5rem;
     padding-inline: 1rem;
+  }
+
+  .page:not(:has(.portraitFrame)) {
+    grid-template-areas: "intro" "copy";
   }
 }
 

@@ -1,32 +1,33 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { PageTransition } from "@/components/page-transition";
 import { WorkPhoto } from "@/components/work-photo";
 import { getGalleryColumns } from "@/lib/work";
 import { getWeddingGallery } from "@/lib/wedding-content";
-import { weddingDetails } from "@/lib/weddings";
 
 import styles from "./wedding.module.css";
 
 export const instant = false;
 
-export function generateStaticParams() {
-  return Object.keys(weddingDetails).map((slug) => ({ slug }));
-}
+type WeddingPageProps = { params: Promise<{ slug: string }> };
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+async function readWedding(params: WeddingPageProps["params"]) {
   const { slug } = await params;
   const wedding = await getWeddingGallery(slug);
   if (!wedding) notFound();
+  if (wedding.slug !== slug) redirect(`/weddings/${wedding.slug}`);
+  return wedding;
+}
+
+export async function generateMetadata({ params }: WeddingPageProps): Promise<Metadata> {
+  const wedding = await readWedding(params);
   return { title: `${wedding.names} — PHM Weddings` };
 }
 
-export default async function WeddingPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const wedding = await getWeddingGallery(slug);
-  if (!wedding) notFound();
+export default async function WeddingPage({ params }: WeddingPageProps) {
+  const wedding = await readWedding(params);
   const columns = getGalleryColumns(wedding.photos);
 
   return (

@@ -1,5 +1,15 @@
 export const aboutDocumentId = "aboutPage";
 
+export const aboutPreviewReady = "phm:about-preview:ready";
+export const aboutPreviewUpdate = "phm:about-preview:update";
+
+export type AboutPortrait = {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+};
+
 export const defaultAboutBiography = `With a background in fashion design and fashion styling, my journey behind the camera began in the world of fashion and portrait photography. Those early years taught me to see beyond the obvious—to notice light, movement, composition, and the subtle details that bring an image to life. They also shaped my appreciation for timeless aesthetics, thoughtful storytelling, and creating photographs that feel as beautiful years from now as they do today.
 
 Today, that foundation naturally flows into the way I photograph weddings. My approach is a balance of editorial elegance and honest documentary storytelling. Rather than directing every moment, I allow your day to unfold naturally while stepping in with gentle guidance when it helps create beautiful, effortless portraits.
