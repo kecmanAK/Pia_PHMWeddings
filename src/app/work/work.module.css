@@ -2,3 +2,8 @@
   min-height: 100svh;
   background: var(--paper);
 }
+
+.empty {
+  padding: 8rem 1.5rem 3rem;
+  text-align: center;
+}

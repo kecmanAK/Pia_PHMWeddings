@@ -59,8 +59,6 @@ type MobilePhotoSlot = {
   x: number;
   y: number;
   width: number;
-  height?: number;
-  crop?: GalleryPhoto["crop"];
 };
 
 type MobilePairLayout = readonly [MobilePhotoSlot, MobilePhotoSlot];
@@ -80,25 +78,6 @@ const similarPhotoPairs: readonly [MobilePairLayout, MobilePairLayout] = [
   [{ x: 0, y: 0, width: 131 }, { x: 203, y: 15, width: 130 }],
 ];
 
-const mobilePairs: Partial<Record<string, MobilePairLayout>> = {
-  "P04/P08": [
-    { ...portraitLandscapePairs[0][0], height: 205, crop: { x: 0, y: -5, width: 143, height: 218 } },
-    { ...portraitLandscapePairs[0][1], y: 66, height: 127 },
-  ],
-  "P13/P14": [
-    { ...landscapePortraitPair[0], height: 107, crop: { x: 0, y: -11, width: 160, height: 123 } },
-    { ...landscapePortraitPair[1], height: 188, crop: { x: 0, y: -8, width: 135, height: 202 } },
-  ],
-  "P05/P12": [
-    { ...portraitLandscapePairs[1][0], height: 119, crop: { x: -17, y: 0, width: 111, height: 119 } },
-    { ...portraitLandscapePairs[1][1], height: 119, crop: { x: 0, y: -5, width: 178, height: 132 } },
-  ],
-  "P02/P01": [
-    { ...similarPhotoPairs[1][0], height: 140, crop: { x: -1, y: -2, width: 132, height: 142 } },
-    { ...similarPhotoPairs[1][1], height: 140 },
-  ],
-};
-
 function getMobilePairLayout(first: GalleryPhoto, second: GalleryPhoto, variant: 0 | 1) {
   const firstIsLandscape = first.image.width > first.image.height;
   const secondIsLandscape = second.image.width > second.image.height;
@@ -107,13 +86,12 @@ function getMobilePairLayout(first: GalleryPhoto, second: GalleryPhoto, variant:
 }
 
 export function getMobileWorkPair(first: GalleryPhoto, second: GalleryPhoto, variant: 0 | 1) {
-  const pairId = `${first.layoutPhotoId ?? first.photoId}/${second.layoutPhotoId ?? second.photoId}`;
-  const slots = mobilePairs[pairId] ?? getMobilePairLayout(first, second, variant);
+  const slots = getMobilePairLayout(first, second, variant);
 
   return [first, second].map(({ photoId, image }, index) => {
-    const { x, y, width, height, crop } = slots[index];
-    const frame = { width, height: height ?? width * image.height / image.width };
+    const { x, y, width } = slots[index];
+    const frame = { width, height: width * image.height / image.width };
 
-    return { x, y, photo: { photoId, image, frame, crop: crop ?? { x: 0, y: 0, ...frame } } };
+    return { x, y, photo: { photoId, image, frame } };
   });
 }

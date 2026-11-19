@@ -3,8 +3,14 @@ import { structureTool } from "sanity/structure";
 
 import { aboutDocumentId, defaultAboutBiography } from "./src/content/about";
 import { contactDocumentId, getInstagramHandle, isContactEmail } from "./src/content/contact";
+import { homepageDocumentId } from "./src/content/homepage";
 import { defaultPrivacyNotice, getPrivacyLinkHref, privacyDocumentId } from "./src/content/privacy";
+import { workOrderDocumentId } from "./src/content/work-order";
+import { GalleryPhotoInput } from "./src/studio/add-to-homepage";
 import { AboutPagePreview } from "./src/studio/about-page-preview";
+import { homepageSchemaTypes } from "./src/studio/homepage-schema";
+import { SelectablePhotoArray, SelectablePhotoItem } from "./src/studio/photo-array-selection";
+import { workOrderSchema } from "./src/studio/work-order";
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID;
 const dataset = process.env.SANITY_STUDIO_DATASET;
@@ -21,17 +27,28 @@ export default defineConfig({
     structure: (builder) => {
       const list = builder.defaults();
       const about = builder.document().singleton(aboutDocumentId).views([
-        builder.view.form(),
+        builder.view.form().id("form"),
         builder.view.component(AboutPagePreview).id("preview").title("Page preview"),
       ]);
+      const workOrder = builder.document().singleton(workOrderDocumentId).child((id, { params }) =>
+        builder.document().schemaType("wedding").documentId(id).initialValueTemplate(params.template ?? "wedding"),
+      );
+      const wedding = {
+        ...workOrder.serialize(),
+        canHandleIntent: (intent, { type }) => type === "wedding" && (intent === "edit" || intent === "create"),
+      };
 
-      return list.items(list.getItems().map((item) =>
-        item.getId() === aboutDocumentId ? item.child(about) : item,
-      ));
+      return list.items(list.getItems().filter((item) => item.getId() !== workOrderDocumentId).map((item) => {
+        if (item.getId() === aboutDocumentId) return item.child(about);
+        if (item.getId() === "wedding") return item.child(wedding);
+        return item;
+      }));
     },
   })],
   schema: {
     types: [
+      ...homepageSchemaTypes,
+      workOrderSchema,
       defineType({
         name: aboutDocumentId,
         title: "About page",
@@ -56,7 +73,7 @@ export default defineConfig({
             name: "portrait",
             title: "Portrait photo",
             type: "image",
-            description: "Upload a portrait to replace the photo on the About page.",
+            description: "Choose the portrait shown on the About page.",
             validation: (rule) => rule.assetRequired(),
             fields: [
               defineField({
@@ -186,11 +203,13 @@ export default defineConfig({
             name: "photos",
             title: "Gallery photos",
             type: "array",
+            components: { input: SelectablePhotoArray },
             description: "Add the gallery photos in order. Open exactly four photos and turn on Work highlight.",
             of: [defineArrayMember({
               name: "galleryPhoto",
               title: "Gallery photo",
               type: "image",
+              components: { input: GalleryPhotoInput, item: SelectablePhotoItem },
               validation: (rule) => rule.required().assetRequired(),
               fields: [
                 defineField({
@@ -221,5 +240,5 @@ export default defineConfig({
       }),
     ],
   },
-  document: { singletons: [aboutDocumentId, contactDocumentId, privacyDocumentId] },
+  document: { singletons: [homepageDocumentId, aboutDocumentId, contactDocumentId, privacyDocumentId, workOrderDocumentId] },
 });

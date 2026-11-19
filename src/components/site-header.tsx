@@ -95,7 +95,7 @@ export function SiteHeader() {
     <header ref={headerRef} className="site-header">
       <nav className="primary-nav" aria-label="Primary navigation">
         <NavbarLink
-          href="/work"
+          href={pathname === "/work" ? "#work-top" : "/work"}
           prefetch={true}
           onNavigate={() => beginNavigation("/work")}
           active={selectedPage === "work" && !contactActive}
@@ -104,7 +104,7 @@ export function SiteHeader() {
           Work
         </NavbarLink>
         <NavbarLink
-          href="/about"
+          href={pathname === "/about" ? "#about-top" : "/about"}
           prefetch={true}
           onNavigate={() => beginNavigation("/about")}
           active={selectedPage === "about" && !contactActive}

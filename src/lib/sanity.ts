@@ -14,7 +14,7 @@ export function getSanityImagePath() {
   return settings && `/images/${settings.projectId}/${settings.dataset}/`;
 }
 
-export async function queryPublishedSanity<T>(query: string, params: Record<string, string> = {}) {
+export async function queryPublishedSanity<T>(query: string, params: Record<string, string | string[]> = {}) {
   const settings = getSanitySettings();
   if (!settings) return undefined;
 
@@ -28,6 +28,7 @@ export async function queryPublishedSanity<T>(query: string, params: Record<stri
 
   try {
     const response = await fetch(url, {
+      cache: "no-store",
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       signal: AbortSignal.timeout(4000),
     });

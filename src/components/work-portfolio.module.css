@@ -160,11 +160,6 @@ a.galleryLink {
   background: var(--paper);
 }
 
-.crop {
-  position: absolute;
-  display: block;
-}
-
 .mobileLayout,
 .mobileCaption[data-mobile-only] {
   display: none;

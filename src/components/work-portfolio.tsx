@@ -302,7 +302,7 @@ export function WorkPortfolio({ weddings }: { weddings: WorkWedding[] }) {
             <MobilePhotoPair wedding={wedding} start={2} variant={weddingIndex % 2 === 0 ? 1 : 0} />
           </div>
           <div className={styles.columns}>
-            {getWorkColumns(wedding.layoutSlug ?? wedding.slug).map((column, columnIndex) => (
+            {getWorkColumns(wedding.slug).map((column, columnIndex) => (
               <div
                 className={styles.column}
                 key={columnIndex}

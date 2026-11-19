@@ -5,5 +5,13 @@
 !sanity.config.js
 !src/content/about.ts
 !src/content/contact.ts
+!src/content/homepage.ts
 !src/content/privacy.ts
+!src/content/work-order.ts
+!src/lib/motion.ts
 !src/studio/about-page-preview.tsx
+!src/studio/add-to-homepage.tsx
+!src/studio/homepage-photo-picker.tsx
+!src/studio/homepage-schema.tsx
+!src/studio/photo-array-selection.tsx
+!src/studio/work-order.tsx

@@ -45,7 +45,7 @@ export function SiteContactBar({ children }: { children: ReactNode }) {
         : { opacity: 1, visibility: "visible" }}
       style={{ pointerEvents: isContactVisible ? "none" : "auto" }}
       inert={isContactVisible}
-      aria-label="PHM Weddings contact details"
+      aria-label="PHM Weddings on Instagram"
       aria-hidden={isContactVisible}
     >
       {children}
