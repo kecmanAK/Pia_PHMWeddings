@@ -121,7 +121,7 @@ export function SiteHeader() {
         aria-label="PHM Weddings home"
         aria-current={isHome && !contactActive ? "page" : undefined}
       >
-        PHM Weddings
+        <span className="wordmark-label">PHM Weddings</span>
       </NavbarLink>
 
       <NavbarLink
