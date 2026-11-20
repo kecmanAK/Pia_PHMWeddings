@@ -77,10 +77,13 @@ export function ContactForm({ privacyLink }: { privacyLink: ReactNode }) {
         <motion.input {...fieldMotion} name="email" type="email" autoComplete="email" required maxLength={contactFieldLimits.email} readOnly={pending} />
       </label>
 
-      <label className="contact-form-message">
-        <span>Message *</span>
-        <motion.textarea {...fieldMotion} name="message" required maxLength={contactFieldLimits.message} readOnly={pending} />
-      </label>
+      <div className="contact-form-message">
+        <label>
+          <span>Message *</span>
+          <motion.textarea {...fieldMotion} name="message" required maxLength={contactFieldLimits.message} readOnly={pending} />
+        </label>
+        <p className="contact-form-feedback" role="status">{feedback}</p>
+      </div>
 
       <input type="text" name="website" aria-label="Website" autoComplete="off" tabIndex={-1} hidden />
 
@@ -95,10 +98,7 @@ export function ContactForm({ privacyLink }: { privacyLink: ReactNode }) {
         >
           {pending ? "Sending…" : "Send message"}
         </motion.button>
-        <div className="contact-form-details">
-          {privacyLink}
-          <p role="status">{feedback}</p>
-        </div>
+        <div className="contact-form-details">{privacyLink}</div>
       </div>
     </form>
   );
