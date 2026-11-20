@@ -18,13 +18,16 @@
   position: sticky;
   top: 50dvh;
   height: 0;
+  display: grid;
+  grid-template-rows: 0;
+  align-items: center;
+  align-items: unsafe center;
   pointer-events: none;
 }
 
 .captionWindow {
   display: grid;
   overflow: clip;
-  transform: translateY(-50%);
 }
 
 .captionCurrent {
@@ -112,6 +115,8 @@ a.galleryLink {
 .group {
   position: relative;
   z-index: 1;
+  /* Keep the photos in a composited layer above the sticky caption while scrolling. */
+  will-change: transform;
   pointer-events: none;
 }
 
