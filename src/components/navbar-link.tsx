@@ -12,7 +12,10 @@ const colors = {
   active: { "--nav-color": "#404040", "--nav-blend-color": "#bfbfbf" },
 };
 
-export function NavbarLink({ active, ...props }: ComponentProps<typeof Link> & { active: boolean }) {
+export function NavbarLink({ active, palette = colors, ...props }: ComponentProps<typeof Link> & {
+  active: boolean;
+  palette?: typeof colors;
+}) {
   const ref = useRef<HTMLAnchorElement>(null);
   const reducedMotion = useReducedMotion();
   const activeRef = useRef(active);
@@ -20,7 +23,7 @@ export function NavbarLink({ active, ...props }: ComponentProps<typeof Link> & {
   const focused = useRef(false);
   const target = useRef(active);
   const animation = useRef<AnimationPlaybackControls | null>(null);
-  const [initialColors] = useState(() => colors[active ? "active" : "idle"] as CSSProperties);
+  const [initialColors] = useState(() => palette[active ? "active" : "idle"] as CSSProperties);
 
   // One animation path for navigation, hover, focus and contact-section changes.
   // Start directly so every interaction uses the same timing.
@@ -30,11 +33,11 @@ export function NavbarLink({ active, ...props }: ComponentProps<typeof Link> & {
     if (next === target.current) return;
     target.current = next;
     animation.current?.stop();
-    animation.current = animate(ref.current, colors[next ? "active" : "idle"], {
+    animation.current = animate(ref.current, palette[next ? "active" : "idle"], {
       duration: reducedMotion ? 0 : interactionDuration,
       ease: "easeOut",
     });
-  }, [reducedMotion]);
+  }, [palette, reducedMotion]);
 
   useLayoutEffect(() => {
     activeRef.current = active;

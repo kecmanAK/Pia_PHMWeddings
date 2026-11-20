@@ -5,6 +5,11 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 
 import { NavbarLink } from "@/components/navbar-link";
 
+const wordmarkPalette = {
+  idle: { "--nav-color": "#a1a1a1", "--nav-blend-color": "#5e5e5e" },
+  active: { "--nav-color": "#1c1c1c", "--nav-blend-color": "#e0e0e0" },
+};
+
 function getNavPage(pathname: string) {
   if (pathname === "/") return "home";
   if (pathname === "/work" || pathname.startsWith("/weddings/")) return "work";
@@ -37,6 +42,9 @@ export function SiteHeader() {
 
   useLayoutEffect(() => {
     committedPathname.current = pathname;
+    if (pathname === window.location.pathname && headerRef.current) {
+      headerRef.current.dataset.navigationReady = "";
+    }
   }, [pathname]);
 
   useEffect(() => {
@@ -114,6 +122,7 @@ export function SiteHeader() {
 
       <NavbarLink
         className="wordmark"
+        palette={wordmarkPalette}
         href={isHome ? "#top" : "/"}
         scroll={isHome}
         onNavigate={() => beginNavigation("/")}

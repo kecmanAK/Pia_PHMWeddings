@@ -122,6 +122,17 @@ a:focus-visible,
   font-weight: 700;
 }
 
+/* The shared HTML can render before Next.js provides the current pathname. */
+body:has(.home-shell):not(:has(#contact:target)) .site-header:not([data-navigation-ready]) .wordmark {
+  color: #1c1c1c;
+}
+
+@supports (mix-blend-mode: difference) {
+  body:has(.home-shell):not(:has(#contact:target)) .site-header:not([data-navigation-ready]) .wordmark {
+    color: #e0e0e0;
+  }
+}
+
 @supports (mask-image: none) {
   .wordmark {
     display: grid;
