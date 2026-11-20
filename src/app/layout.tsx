@@ -25,9 +25,14 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.phmweddings.com"),
   title: "PHM Weddings — Soft, elegant, authentic photography",
   description:
     "PHM Weddings documents celebrations with modern, authentic wedding photography across Europe and worldwide.",
+  openGraph: {
+    type: "website",
+    siteName: "PHM Weddings",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
